@@ -1,0 +1,1580 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Parent Orientation Tracker</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f6fb;
+      min-height: 100vh;
+      color: #1a1a2e
+    }
+
+    .app {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 1.5rem 1rem
+    }
+
+    .top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+      gap: 12px
+    }
+
+    .app-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: #1F3864
+    }
+
+    .app-sub {
+      font-size: 13px;
+      color: #666;
+      margin-top: 2px
+    }
+
+    .role-tabs {
+      display: flex;
+      gap: 8px
+    }
+
+    .role-btn {
+      padding: 8px 20px;
+      border-radius: 8px;
+      border: 1.5px solid #c5d3e8;
+      background: #fff;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      color: #555;
+      transition: all 0.15s
+    }
+
+    .role-btn.active {
+      background: #185FA5;
+      color: #fff;
+      border-color: #185FA5
+    }
+
+    .badge {
+      display: inline-block;
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 20px;
+      margin-left: 6px
+    }
+
+    .bp {
+      background: #E6F1FB;
+      color: #0C447C
+    }
+
+    .bs {
+      background: #EAF3DE;
+      color: #27500A
+    }
+
+    .card {
+      background: #fff;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 1.25rem;
+      margin-bottom: 1rem;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05)
+    }
+
+    .sec-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: #1F3864;
+      margin-bottom: 1rem
+    }
+
+    .sec-sub {
+      font-size: 12px;
+      font-weight: 400;
+      color: #888;
+      margin-left: 6px
+    }
+
+    .fg2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 12px
+    }
+
+    .fg {
+      display: flex;
+      flex-direction: column;
+      gap: 4px
+    }
+
+    .fg.full {
+      grid-column: 1/-1
+    }
+
+    label {
+      font-size: 12px;
+      color: #555;
+      font-weight: 600
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      padding: 8px 10px;
+      border: 1px solid #d1d9e6;
+      border-radius: 8px;
+      font-size: 13px;
+      background: #fff;
+      color: #1a1a2e;
+      font-family: Arial, sans-serif
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 60px
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      outline: none;
+      border-color: #185FA5;
+      box-shadow: 0 0 0 2px rgba(24, 95, 165, 0.12)
+    }
+
+    .btn {
+      padding: 8px 18px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      font-family: Arial, sans-serif
+    }
+
+    .btn-p {
+      background: #185FA5;
+      color: #fff
+    }
+
+    .btn-p:hover {
+      background: #0C447C
+    }
+
+    .btn-o {
+      background: #fff;
+      border: 1.5px solid #c5d3e8;
+      color: #333
+    }
+
+    .btn-o:hover {
+      background: #f0f4fa
+    }
+
+    .btn-d {
+      background: #A32D2D;
+      color: #fff
+    }
+
+    .btn-sm {
+      padding: 5px 12px;
+      font-size: 12px
+    }
+
+    .btn-green {
+      background: #3B6D11;
+      color: #fff
+    }
+
+    .btn-green:hover {
+      background: #27500A
+    }
+
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-bottom: 1rem
+    }
+
+    .metric {
+      background: #f0f4fa;
+      border-radius: 8px;
+      padding: 0.9rem;
+      text-align: center
+    }
+
+    .mv {
+      font-size: 22px;
+      font-weight: 700;
+      color: #1F3864
+    }
+
+    .ml {
+      font-size: 12px;
+      color: #666;
+      margin-top: 3px
+    }
+
+    .slist {
+      display: flex;
+      flex-direction: column;
+      gap: 8px
+    }
+
+    .srow {
+      background: #fff;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      overflow: hidden
+    }
+
+    .shead {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      padding: 1rem 1.25rem;
+      gap: 12px;
+      flex-wrap: wrap;
+      cursor: pointer
+    }
+
+    .shead:hover {
+      background: #f8faff
+    }
+
+    .smeta {
+      flex: 1
+    }
+
+    .strow {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 4px;
+      flex-wrap: wrap
+    }
+
+    .sname {
+      font-size: 14px;
+      font-weight: 700;
+      color: #1F3864
+    }
+
+    .pill {
+      font-size: 11px;
+      padding: 2px 9px;
+      border-radius: 20px;
+      font-weight: 600
+    }
+
+    .pl {
+      background: #E6F1FB;
+      color: #185FA5
+    }
+
+    .pc {
+      background: #EAF3DE;
+      color: #3B6D11
+    }
+
+    .sdet {
+      font-size: 12px;
+      color: #666;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 2px
+    }
+
+    .sact {
+      display: flex;
+      gap: 6px;
+      flex-shrink: 0;
+      align-items: flex-start
+    }
+
+    .exp {
+      display: none;
+      padding: 1.25rem;
+      border-top: 1px solid #e2e8f0;
+      background: #f8faff
+    }
+
+    .ig {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 1rem
+    }
+
+    .ii label {
+      font-size: 11px;
+      color: #888;
+      display: block;
+      margin-bottom: 2px;
+      font-weight: 600
+    }
+
+    .ii p {
+      font-size: 13px;
+      color: #1a1a2e
+    }
+
+    .divhr {
+      border: none;
+      border-top: 1px solid #e2e8f0;
+      margin: 1rem 0
+    }
+
+    .stl {
+      font-size: 13px;
+      font-weight: 700;
+      color: #555;
+      margin-bottom: 10px
+    }
+
+    .engbar {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-top: 6px
+    }
+
+    .eb {
+      padding: 5px 14px;
+      border-radius: 20px;
+      border: 1px solid #d1d9e6;
+      font-size: 12px;
+      cursor: pointer;
+      background: #fff;
+      color: #555;
+      font-family: Arial, sans-serif;
+      font-weight: 600
+    }
+
+    .eH {
+      background: #EAF3DE;
+      color: #27500A;
+      border-color: #639922
+    }
+
+    .eM {
+      background: #FAEEDA;
+      color: #633806;
+      border-color: #BA7517
+    }
+
+    .eL {
+      background: #FCEBEB;
+      color: #A32D2D;
+      border-color: #E24B4A
+    }
+
+    .grade-bar {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-top: 6px
+    }
+
+    .gb {
+      padding: 5px 14px;
+      border-radius: 8px;
+      border: 1px solid #c5d3e8;
+      font-size: 13px;
+      cursor: pointer;
+      background: #fff;
+      color: #555;
+      font-family: Arial, sans-serif;
+      font-weight: 600;
+      transition: all 0.2s
+    }
+
+    .gb:hover {
+      background: #f0f4fa
+    }
+
+    .gb.active {
+      background: #3B6D11;
+      color: #fff;
+      border-color: #27500A
+    }
+
+    .fb {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+      align-items: center
+    }
+
+    .fb select,
+    .fb input[type=text] {
+      width: auto;
+      padding: 6px 10px;
+      font-size: 12px
+    }
+
+    .flbl {
+      font-size: 12px;
+      color: #666;
+      font-weight: 600
+    }
+
+    .glbl {
+      font-size: 11px;
+      font-weight: 700;
+      color: #888;
+      letter-spacing: 0.05em;
+      margin-bottom: 6px;
+      margin-top: 4px;
+      text-transform: uppercase
+    }
+
+    .empty {
+      text-align: center;
+      padding: 2.5rem;
+      color: #888;
+      font-size: 14px
+    }
+
+    .arrow {
+      font-size: 11px;
+      color: #888;
+      display: inline-block;
+      transition: transform 0.2s;
+      margin-left: 4px
+    }
+
+    .arrow.open {
+      transform: rotate(180deg)
+    }
+
+    .export-bar {
+      display: flex;
+      gap: 8px;
+      justify-content: flex-end;
+      margin-bottom: 1rem
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: #185FA5;
+      color: #fff;
+      padding: 10px 18px;
+      border-radius: 8px;
+      font-size: 13px;
+      opacity: 0;
+      transition: opacity 0.3s;
+      pointer-events: none;
+      z-index: 999;
+      box-shadow: 0 4px 12px rgba(24, 95, 165, 0.3)
+    }
+
+    .toast.show {
+      opacity: 1
+    }
+
+    .login-screen {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #f4f6fb;
+      padding: 1rem
+    }
+
+    .login-card {
+      width: 100%;
+      max-width: 380px;
+      background: #fff;
+      border: 1px solid #e2e8f0;
+      border-radius: 16px;
+      padding: 2rem;
+      box-shadow: 0 18px 30px rgba(0, 0, 0, 0.08)
+    }
+
+    .login-title {
+      font-size: 22px;
+      font-weight: 700;
+      color: #1F3864;
+      margin-bottom: 8px
+    }
+
+    .login-sub {
+      font-size: 14px;
+      color: #666;
+      margin-bottom: 22px
+    }
+
+    .login-field {
+      margin-bottom: 14px
+    }
+
+    .login-field label {
+      display: block;
+      font-size: 13px;
+      color: #555;
+      margin-bottom: 6px;
+      font-weight: 600
+    }
+
+    .login-field input {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid #d1d9e6;
+      border-radius: 10px;
+      font-size: 14px
+    }
+
+    .login-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+      margin-top: 1rem
+    }
+
+    .login-btn {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: none;
+      font-size: 14px;
+      font-weight: 700;
+      background: #185FA5;
+      color: #fff;
+      cursor: pointer
+    }
+
+    .login-btn:hover {
+      background: #0C447C
+    }
+
+    .login-note {
+      font-size: 12px;
+      color: #888;
+      margin-top: 12px;
+      text-align: center
+    }
+  </style>
+</head>
+
+<body>
+  <div id="login-screen" class="login-screen">
+    <div class="login-card">
+      <div class="login-title">Please sign in</div>
+      <form id="login-form">
+        <div class="login-field">
+          <label for="login-user">Username</label>
+          <input type="text" id="login-user" value="" autocomplete="off">
+        </div>
+        <div class="login-field">
+          <label for="login-pass">Password</label>
+          <input type="text" id="login-pass" value="" autocomplete="off">
+        </div>
+        <div class="login-actions">
+          <button type="submit" class="login-btn">Login</button>
+        </div>
+      </form>
+    </div>
+  </div>
+  <div class="app" style="display:none">
+    <div class="top-bar">
+      <div>
+        <div class="app-title">Parent Orientation Tracker</div>
+        <div class="app-sub">Pre-Sales Activity Management</div>
+      </div>
+      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+        <button class="btn btn-green btn-sm" onclick="exportExcel()">⬇ Export to Excel</button>
+        <div class="role-tabs" id="role-tabs">
+          <button class="role-btn active" id="tab-pmo" onclick="switchRole('pmo')">PMO <span
+              class="badge bp">Plan</span></button>
+          <button class="role-btn" id="tab-spk" onclick="switchRole('speaker')">Speaker <span
+              class="badge bs">Update</span></button>
+        </div>
+        <button class="btn btn-o btn-sm" onclick="logoutUser()">Logout</button>
+      </div>
+    </div>
+
+    <div id="view-pmo">
+      <div class="card">
+        <div class="sec-title" id="form-title">Plan New Session <span class="sec-sub">Fill details before the
+            orientation</span></div>
+        <div class="fg2">
+          <div class="fg"><label>Session Date</label><input type="date" id="p-date"></div>
+          <div class="fg"><label>Session Time</label><input type="time" id="p-time"></div>
+          <div class="fg">
+            <label>Grade</label>
+            <div class="grade-bar" id="p-grade-bar">
+              <button type="button" class="gb" onclick="pickGrade('G1')" id="grade-G1">G1</button>
+              <button type="button" class="gb" onclick="pickGrade('G2')" id="grade-G2">G2</button>
+              <button type="button" class="gb" onclick="pickGrade('G3')" id="grade-G3">G3</button>
+              <button type="button" class="gb" onclick="pickGrade('G4')" id="grade-G4">G4</button>
+              <button type="button" class="gb" onclick="pickGrade('G5')" id="grade-G5">G5</button>
+              <button type="button" class="gb" onclick="pickGrade('G6')" id="grade-G6">G6</button>
+              <button type="button" class="gb" onclick="pickGrade('G7')" id="grade-G7">G7</button>
+              <button type="button" class="gb" onclick="pickGrade('G8')" id="grade-G8">G8</button>
+              <button type="button" class="gb" onclick="pickGrade('G9')" id="grade-G9">G9</button>
+            </div>
+          </div>
+          <div class="fg"><label>Zoom Meet Link</label><input type="text" id="p-zoom" placeholder="e.g. https://...">
+          </div>
+          <div class="fg"><label>Region</label>
+            <select id="p-region" onchange="updateBranches()">
+              <option value="">Select Region</option>
+              <option value="Andhra Pradesh">Andhra Pradesh</option>
+              <option value="Bengaluru">Bengaluru</option>
+              <option value="Chennai">Chennai</option>
+              <option value="Delhi NCR">Delhi NCR</option>
+              <option value="Haryana">Haryana</option>
+              <option value="Maharashtra">Maharashtra</option>
+              <option value="Punjab">Punjab</option>
+              <option value="Rajasthan">Rajasthan</option>
+              <option value="Rest of Karnataka">Rest of Karnataka</option>
+              <option value="Rest of Tamil Nadu">Rest of Tamil Nadu</option>
+              <option value="Telangana">Telangana</option>
+              <option value="Uttar Pradesh">Uttar Pradesh</option>
+              <option value="Uttarakhand">Uttarakhand</option>
+              <option value="West Bengal">West Bengal</option>
+            </select>
+          </div>
+          <div class="fg" id="branch-container"><label>Branch Name</label><input type="text" id="p-branch"
+              placeholder="e.g. Koramangala Branch"></div>
+          <div class="fg">
+            <label>Venue / Medium</label>
+            <div class="grade-bar" id="p-venue-bar">
+              <button type="button" class="gb" onclick="pickVenue('Online')" id="venue-Online">Online</button>
+              <button type="button" class="gb" onclick="pickVenue('Offline')" id="venue-Offline">Offline</button>
+            </div>
+          </div>
+          <div class="fg"><label>Conducted By (Teacher)</label><input type="text" id="p-teacher"
+              placeholder="Teacher name"></div>
+          <div class="fg"><label>Co-Host / Support Staff</label><input type="text" id="p-cohost" placeholder="Optional">
+          </div>
+          <div class="fg"><label>No. of Parents Invited</label><input type="number" id="p-invited" placeholder="0"
+              min="0"></div>
+        </div>
+        <div style="display:flex;gap:8px;justify-content:flex-end">
+          <button class="btn btn-o" onclick="cancelEdit()" id="btn-cancel-edit" style="display:none">Cancel</button>
+          <button class="btn btn-o" onclick="clearForm()">Clear</button>
+          <button class="btn btn-p" id="btn-save-plan" onclick="saveSession()">Save Session Plan</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="sec-title">All Sessions <span class="sec-sub" id="count-lbl"></span></div>
+        <div class="metrics" id="metrics"></div>
+        <div class="fb">
+          <span class="flbl">Filter:</span>
+          <select id="f-status" onchange="renderPMO()">
+            <option value="">All Status</option>
+            <option value="Planned">Planned</option>
+            <option value="Completed">Completed</option>
+          </select>
+          <input type="text" id="f-search" placeholder="Search branch / teacher…" oninput="renderPMO()">
+        </div>
+        <div class="slist" id="pmo-list"></div>
+      </div>
+    </div>
+
+    <div id="view-speaker" style="display:none">
+      <div class="card">
+        <div class="sec-title">Post-Activity Update <span class="sec-sub">Click a session row to expand and update
+            outcomes</span></div>
+        <div id="spk-list"></div>
+      </div>
+    </div>
+  </div>
+  <div class="toast" id="toast"></div>
+
+  <!-- Excel & FileSaver Libraries -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+
+  <script>
+    const STORE_KEY = 'po_sessions_v4';
+    let sessions = [];
+    let openExpand = {};
+    let _selEng = {};
+    let _selAction = {};
+    let _selGrades = [];
+    let _selVenue = '';
+    let editingId = null;
+
+    function expandKey(sid, mode = 'pmo') {
+      return `${mode}:${sid}`;
+    }
+
+    async function generateExcelBuffer() {
+      const headers = [
+        'Session Date', 'Session Time', 'Grade', 'Zoom Meet Link', 'Region', 'Branch Name', 'Venue / Medium',
+        'Conducted By', 'Co-Host', 'Parents Invited'
+      ];
+
+      const response = await fetch('Parent_Orientation_Tracker.xlsx');
+      if (!response.ok) throw new Error("Template file not found");
+      const arrayBuffer = await response.arrayBuffer();
+
+      const wb = new ExcelJS.Workbook();
+      await wb.xlsx.load(arrayBuffer);
+
+      let ws = wb.getWorksheet('PMO - Plan Sessions') || wb.getWorksheet('PMO – Plan Sessions') || wb.getWorksheet('Session Log') || wb.getWorksheet(1);
+
+      const headerRow = ws.getRow(3);
+      headerRow.values = headers;
+      for (let c = 1; c <= headers.length; c++) {
+        const cell = headerRow.getCell(c);
+        cell.font = { bold: true, color: { argb: 'FFFFFFFF' } };
+        cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF1F3864' } };
+      }
+      for (let c = headers.length + 1; c <= 25; c++) {
+        const cell = headerRow.getCell(c);
+        cell.value = null; cell.style = {};
+      }
+      headerRow.commit();
+
+      // Forcefully clear rows to avoid any leftover test data
+      for (let r = 4; r <= 2000; r++) {
+        const row = ws.getRow(r);
+        if (row.hasValues) {
+          row.values = [];
+          row.commit();
+        }
+      }
+
+      sessions.forEach((s, idx) => {
+        const row = ws.getRow(4 + idx);
+        row.values = [
+          s.date, s.time, s.grade || '', s.zoom || '', s.region, s.branch, s.venue,
+          s.teacher, s.cohost, s.invited || 0
+        ];
+        row.commit();
+      });
+
+      let wsSpeaker = wb.getWorksheet('Speaker – Post Activity') || wb.getWorksheet('Speaker - Post Activity');
+      if (wsSpeaker) {
+        // Ensure "Update Action" column exists after "Branch Name"
+        if (wsSpeaker.getRow(4).getCell(3).value !== 'Update Action') {
+          wsSpeaker.spliceColumns(3, 0, []);
+          wsSpeaker.getRow(3).getCell(3).value = 'SESSION REF';
+          wsSpeaker.getRow(4).getCell(3).value = 'Update Action';
+          wsSpeaker.getRow(4).getCell(3).font = wsSpeaker.getRow(4).getCell(2).font;
+          wsSpeaker.getRow(4).getCell(3).fill = wsSpeaker.getRow(4).getCell(2).fill;
+        }
+
+        for (let r = 5; r <= 2000; r++) {
+          const row = wsSpeaker.getRow(r);
+          if (row.hasValues) {
+            row.values = [];
+            row.commit();
+          }
+        }
+        sessions.forEach((s, idx) => {
+          const row = wsSpeaker.getRow(5 + idx);
+          row.values = [
+            s.date,
+            s.branch,
+            s.updateAction || s.sessionStatus || '',
+            s.attended !== '' ? parseInt(s.attended) || 0 : '',
+            s.engagement || '',
+            s.followUp || '',
+            s.followUpDate || '',
+            s.sessionStatus || '',
+            s.followUpNotes || '',
+            s.remarks || ''
+          ];
+          row.commit();
+        });
+      }
+
+      let wsSummary = wb.getWorksheet('Summary Dashboard') || wb.getWorksheet('Summary');
+      if (wsSummary) {
+        const total = sessions.length;
+        const done = sessions.filter(s => s.status === 'Completed').length;
+        const inv = sessions.reduce((a, s) => a + (s.invited || 0), 0);
+        const att = sessions.reduce((a, s) => a + (parseInt(s.attended) || 0), 0);
+        const rate = inv ? Math.round(att / inv * 100) : 0;
+        const highEng = sessions.filter(s => s.engagement === 'H').length;
+        const medEng = sessions.filter(s => s.engagement === 'M').length;
+        const lowEng = sessions.filter(s => s.engagement === 'L').length;
+
+        wsSummary.getRow(5).getCell(4).value = total;
+        wsSummary.getRow(6).getCell(4).value = done;
+        wsSummary.getRow(7).getCell(4).value = inv;
+        wsSummary.getRow(8).getCell(4).value = att;
+        wsSummary.getRow(9).getCell(4).value = rate + '%';
+        wsSummary.getRow(10).getCell(4).value = highEng;
+        wsSummary.getRow(11).getCell(4).value = medEng;
+        wsSummary.getRow(12).getCell(4).value = lowEng;
+      }
+
+      return await wb.xlsx.writeBuffer();
+    }
+
+    async function loadData() {
+      try {
+         sessions = JSON.parse(localStorage.getItem(STORE_KEY) || '[]');
+         const len = sessions.length;
+         sessions = sessions.filter(s => s.branch !== 'Sri Chaitanya-Mylapore');
+         if (sessions.length !== len) {
+            await saveData();
+         }
+         
+         // TEMPORARY: Hard clear all data once
+         if (!localStorage.getItem('wiped_once')) {
+            sessions = [];
+            localStorage.setItem('wiped_once', 'true');
+            await saveData();
+         }
+      } catch (e) {
+        sessions = [];
+      }
+      renderAll();
+    }
+
+    async function saveData() {
+      localStorage.setItem(STORE_KEY, JSON.stringify(sessions));
+      try {
+        const buf = await generateExcelBuffer();
+        const res = await fetch('/api/uploadExcel', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' },
+          body: buf
+        });
+        if (!res.ok) {
+          console.error("Failed to sync file to server. Status:", res.status);
+        }
+      } catch (err) {
+        console.error("Failed to upload data to backend:", err);
+      }
+    }
+
+    async function refreshData() {
+      await saveData();
+      renderAll();
+    }
+
+    function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 5); }
+
+    function toast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg; t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 2500);
+    }
+
+    const PMO_USER = 'PMO';
+    const PMO_PASS = 'PMO@123';
+    const SPK_USER = 'Speaker';
+    const SPK_PASS = 'Speaker@123';
+
+    function isLoggedIn() {
+      const role = sessionStorage.getItem('po_logged_in');
+      return role === 'pmo' || role === 'speaker' || role === '1';
+    }
+
+    function showLogin() {
+      document.getElementById('login-screen').style.display = 'flex';
+      document.querySelector('.app').style.display = 'none';
+    }
+
+    function logoutUser() {
+      sessionStorage.removeItem('po_logged_in');
+      document.getElementById('login-user').value = '';
+      document.getElementById('login-pass').value = '';
+      showLogin();
+      toast('Logged out successfully');
+    }
+
+    function showApp() {
+      document.getElementById('login-screen').style.display = 'none';
+      document.querySelector('.app').style.display = 'block';
+
+      const role = sessionStorage.getItem('po_logged_in');
+      const tabs = document.getElementById('role-tabs');
+      if (role === 'pmo' || role === '1') {
+        if (tabs) tabs.style.display = 'none';
+        switchRole('pmo');
+      } else if (role === 'speaker') {
+        if (tabs) tabs.style.display = 'none';
+        switchRole('speaker');
+      }
+
+      loadData();
+    }
+
+    function loginUser() {
+      const user = document.getElementById('login-user').value.trim();
+      const pass = document.getElementById('login-pass').value;
+      if ((user === PMO_USER && pass === PMO_PASS) || (user.toLowerCase() === 'admin' && pass === 'PMO@123')) {
+        sessionStorage.setItem('po_logged_in', 'pmo');
+        showApp();
+        toast('Welcome PMO');
+        return;
+      }
+      if (user === SPK_USER && pass === SPK_PASS) {
+        sessionStorage.setItem('po_logged_in', 'speaker');
+        showApp();
+        toast('Welcome Speaker');
+        return;
+      }
+      toast('Invalid username or password');
+    }
+
+    function initLogin() {
+      document.getElementById('login-form').addEventListener('submit', function (e) {
+        e.preventDefault();
+        loginUser();
+      });
+      if (isLoggedIn()) {
+        showApp();
+      } else {
+        showLogin();
+      }
+    }
+
+    function fmtDate(d) {
+      if (!d) return '—';
+      const [y, m, day] = d.split('-');
+      return `${day}/${m}/${y}`;
+    }
+
+    function switchRole(r) {
+      document.getElementById('view-pmo').style.display = r === 'pmo' ? '' : 'none';
+      document.getElementById('view-speaker').style.display = r === 'speaker' ? '' : 'none';
+      document.getElementById('tab-pmo').classList.toggle('active', r === 'pmo');
+      document.getElementById('tab-spk').classList.toggle('active', r === 'speaker');
+    }
+
+    function pickGrade(val) {
+      if (!_selGrades.includes(val)) {
+        _selGrades.push(val);
+      } else {
+        _selGrades = _selGrades.filter(g => g !== val);
+      }
+      _selGrades.sort(); // Sort so they are always in standard order G1..G9
+
+      document.querySelectorAll('#p-grade-bar .gb').forEach(btn => btn.classList.remove('active'));
+      _selGrades.forEach(g => {
+        const b = document.getElementById('grade-' + g);
+        if (b) b.classList.add('active');
+      });
+    }
+
+    function pickVenue(val) {
+      _selVenue = val;
+      document.querySelectorAll('#p-venue-bar .gb').forEach(btn => btn.classList.remove('active'));
+      const b = document.getElementById('venue-' + val);
+      if (b) b.classList.add('active');
+    }
+
+    const regionBranches = {
+      "Andhra Pradesh": [
+        "Sri Chaitanya-Asilmetta 3",
+        "Sri Chaitanya-Eluru CBSE",
+        "Sri Chaitanya-Ganapavaram",
+        "Sri Chaitanya-Guntur Res",
+        "Sri Chaitanya-International Bezawada",
+        "Sri Chaitanya-International School Vijayawada",
+        "Sri Chaitanya-International School Whitehouse",
+        "Sri Chaitanya-Kakinada 3",
+        "Sri Chaitanya-Kurmannapalem",
+        "Sri Chaitanya-Madhurawada",
+        "Sri Chaitanya-Madhurawada 5",
+        "Sri Chaitanya-Palakol 2",
+        "Sri Chaitanya-REDDYPALEM DS",
+        "Sri Chaitanya-Rajahmundry 1",
+        "Sri Chaitanya-TSN Puram",
+        "Sri Chaitanya-Tadepalligudem"
+      ],
+      "Bengaluru": [
+        "Sri Chaitanya-Basavanagudi",
+        "Sri Chaitanya-Banaswadi",
+        "Sri Chaitanya-Bannerghatta Road",
+        "Sri Chaitanya-Electronic City International",
+        "Sri Chaitanya-Future Pathways Global School Varthur",
+        "Sri Chaitanya-Hebbal",
+        "Sri Chaitanya-HSR layout",
+        "Sri Chaitanya-Kudlu 2",
+        "Sri Chaitanya-JP Nagar",
+        "Sri Chaitanya-Kaggadasapura 2",
+        "Sri Chaitanya-Kaggadasapura 3",
+        "Sri Chaitanya-Kudlu",
+        "Sri Chaitanya-Kaggadasapura",
+        "Sri Chaitanya-KR Puram",
+        "Sri Chaitanya-Kanakapura Road",
+        "Sri Chaitanya-Marthahally 1",
+        "Sri Chaitanya-Marthahally 2",
+        "Sri Chaitanya-Mahalakshmi Layout",
+        "Sri Chaitanya-M S Palya",
+        "Sri Chaitanya-Nagarbhavi",
+        "Sri Chaitanya-Peenya Dasarahalli",
+        "Sri Chaitanya-Ram Murthy Nagar 1",
+        "Sri Chaitanya-Ram Murthy Nagar 3",
+        "Sri Chaitanya-Ram Murthy Nagar 4",
+        "Sri Chaitanya-Rajaji Nagar",
+        "Sri Chaitanya-Seshadripuram",
+        "Sri Chaitanya-Uttarahalli",
+        "Sri Chaitanya-Ullal",
+        "Sri Chaitanya-Vidyaranyapura",
+        "Sri Chaitanya-Whitefield",
+        "Sri Chaitanya-Yeshwanthpur",
+        "Sri Chaitanya-Yelahanka"
+      ],
+      "Chennai": [
+        "Sri Chaitanya-Iyyapanthangal",
+        "Sri Chaitanya-Keelkattalai",
+        "Sri Chaitanya-KK Nagar",
+        "Sri Chaitanya-Mylapore",
+        "Sri Chaitanya-Moolakadai",
+        "Sri Chaitanya-Madhavaram",
+        "Sri Chaitanya-Manapakkam",
+        "Sri Chaitanya-Nolambur",
+        "Sri Chaitanya-Pallavaram 2",
+        "Sri Chaitanya-Perungudi",
+        "Sri Chaitanya-Pallavaram",
+        "Sri Chaitanya-Pallavakkam",
+        "Sri Chaitanya-Perumbakkam",
+        "Sri Chaitanya-Royapuram",
+        "Sri Chaitanya-Ramapuram",
+        "Sri Chaitanya-Selaiyur",
+        "Sri Chaitanya-Poonamallee International School",
+        "Sri Chaitanya-Thoraipakkam",
+        "Sri Chaitanya-Tambaram",
+        "Sri Chaitanya-Velachery"
+      ],
+      "Delhi NCR": [
+        "Sri Chaitanya-Faridabad 2",
+        "Sri Chaitanya-Faridabad",
+        "Sri Chaitanya-Gurugram 1",
+        "Sri Chaitanya-Ghaziabad 1",
+        "Sri Chaitanya-Gurugram 2",
+        "Sri Chaitanya-Ghaziabad 2",
+        "Sri Chaitanya-Gurugram 3",
+        "Sri Chaitanya-Gurugram 4",
+        "Sri Chaitanya-Gurugram 6",
+        "Sri Chaitanya-Gurugram 9",
+        "Sri Chaitanya-Noida 1",
+        "Sri Chaitanya-Noida 2",
+        "Sri Chaitanya-Noida 3"
+      ],
+      "Haryana": [
+        "Sri Chaitanya-Ambala",
+        "Sri Chaitanya-Karnal",
+        "Sri Chaitanya-Panipat"
+      ],
+      "Maharashtra": [
+        "Sri Chaitanya-Aurangabad 1",
+        "Sri Chaitanya-Aurangabad 2",
+        "Sri Chaitanya-Bavadhan",
+        "Sri Chaitanya-Nashik 1",
+        "Sri Chaitanya-Nashik 2",
+        "Sri Chaitanya-Nanded",
+        "Sri Chaitanya-Dombivali",
+        "Sri Chaitanya-Ulhasnagar",
+        "Sri Chaitanya-Wagholi"
+      ],
+      "Punjab": [
+        "Sri Chaitanya-DHURI 2",
+        "Sri Chaitanya-Hathan",
+        "Sri Chaitanya-Jalandhar",
+        "Sri Chaitanya-Malsian",
+        "Sri Chaitanya-Sunam"
+      ],
+      "Rajasthan": [
+        "Sri Chaitanya-Bikaner",
+        "Sri Chaitanya-Jaipur 1",
+        "Sri Chaitanya-Jaipur 2",
+        "Sri Chaitanya-Jaipur 3",
+        "Sri Chaitanya-Jaipur 4",
+        "Sri Chaitanya-Jodhpur"
+      ],
+      "Rest of Karnataka": [
+        "Sri Chaitanya-Ballari",
+        "Sri Chaitanya-Davanagere",
+        "Sri Chaitanya-Gangavathi",
+        "Sri Chaitanya-Hubli",
+        "Sri Chaitanya-Hospet",
+        "Sri Chaitanya-Mandya",
+        "Sri Chaitanya-Mangalore",
+        "Sri Chaitanya-Mysore",
+        "Sri Chaitanya-Raichur 3",
+        "Sri Chaitanya-Sindhanur",
+        "Sri Chaitanya-Tumkur 1",
+        "Sri Chaitanya-Tumkur 3"
+      ],
+      "Rest of Tamil Nadu": [
+        "Sri Chaitanya-Coimbatore 1",
+        "Sri Chaitanya-Coimbatore-2",
+        "Sri Chaitanya-Coimbatore 4",
+        "Sri Chaitanya-Coimbatore 6",
+        "Sri Chaitanya-Dindigul",
+        "Sri Chaitanya-Erode",
+        "Sri Chaitanya-Hosur 1",
+        "Sri Chaitanya-Hosur 2",
+        "Sri Chaitanya-Hosur 3",
+        "Sri Chaitanya-Karur",
+        "Sri Chaitanya-Krishnagiri",
+        "Sri Chaitanya-Namakkal",
+        "Sri Chaitanya-Salem",
+        "Sri Chaitanya-Tiruppur 2",
+        "Sri Chaitanya-Tiruppur",
+        "Sri Chaitanya-Tiruvannamalai",
+        "Sri Chaitanya-Trichy"
+      ],
+      "Telangana": [
+        "Sri Chaitanya-Adibatla",
+        "Sri Chaitanya-Chaitanyapuri CBSE",
+        "Sri Chaitanya-Ecil 3",
+        "Sri Chaitanya-Gundla Pochampally CBSE",
+        "Sri Chaitanya-Hasmathpet",
+        "Sri Chaitanya-Himayatnagar",
+        "Sri Chaitanya-Jubilee Hills",
+        "Sri Chaitanya-Kompally 2",
+        "Sri Chaitanya-Kompally 5",
+        "Sri Chaitanya-Khalsa",
+        "Sri Chaitanya-Mehdipatnam",
+        "Sri Chaitanya-Manikonda",
+        "Sri Chaitanya-Nallakunta",
+        "Sri Chaitanya-Nagole",
+        "Sri Chaitanya-Nacharam",
+        "Sri Chaitanya-Nallagandla",
+        "Sri Chaitanya- NTPC Ramagundam",
+        "Sri Chaitanya-Ramagundam",
+        "Sri Chaitanya-Sr Nagar"
+      ],
+      "Uttar Pradesh": [
+        "Sri Chaitanya-Agra",
+        "Sri Chaitanya-Lucknow 1",
+        "Sri Chaitanya-Muzaffarnagar",
+        "Sri Chaitanya-Shamli"
+      ],
+      "Uttarakhand": [
+        "Sri Chaitanya-Dehradun"
+      ],
+      "West Bengal": [
+        "Sri Chaitanya-Bada Bazar",
+        "Sri Chaitanya- Dunlop",
+        "Sri Chaitanya-Howrah",
+        "Sri Chaitanya-New Town 1",
+        "Sri Chaitanya-New Town 2",
+        "Sri Chaitanya-Serampore"
+      ]
+
+    };
+
+    function updateBranches(forceBranch) {
+      const reg = document.getElementById('p-region').value;
+      const container = document.getElementById('branch-container');
+      const branches = regionBranches[reg] || [];
+
+      const currentVal = (typeof forceBranch !== 'undefined') ? forceBranch : (document.getElementById('p-branch') ? document.getElementById('p-branch').value : '');
+
+      if (branches.length > 0) {
+        let optionsHTML = '<option value="">Select Branch</option>';
+        let found = false;
+        branches.forEach(b => {
+          optionsHTML += `<option value="${b}">${b}</option>`;
+          if (b === currentVal) found = true;
+        });
+        if (currentVal && !found) {
+          optionsHTML += `<option value="${currentVal}">${currentVal}</option>`;
+        }
+
+        container.innerHTML = `<label>Branch Name</label><select id="p-branch">${optionsHTML}</select>`;
+      } else {
+        container.innerHTML = `<label>Branch Name</label><input type="text" id="p-branch" placeholder="Type Branch Name here...">`;
+      }
+
+      const el = document.getElementById('p-branch');
+      if (el) el.value = currentVal;
+    }
+
+    function clearForm() {
+      ['p-date', 'p-time', 'p-zoom', 'p-region', 'p-teacher', 'p-cohost', 'p-invited']
+        .forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+      _selGrades = [];
+      _selVenue = '';
+      document.querySelectorAll('.gb').forEach(b => b.classList.remove('active'));
+      updateBranches('');
+    }
+
+    function cancelEdit() {
+      editingId = null;
+      document.getElementById('form-title').innerHTML = `Plan New Session <span class="sec-sub">Fill details before the orientation</span>`;
+      document.getElementById('btn-save-plan').textContent = 'Save Session Plan';
+      document.getElementById('btn-cancel-edit').style.display = 'none';
+      clearForm();
+    }
+
+    function editSession(id) {
+      const s = sessions.find(x => x.id === id);
+      if (!s) return;
+      editingId = id;
+      document.getElementById('p-date').value = s.date;
+      document.getElementById('p-time').value = s.time || '';
+      _selGrades = s.grade ? s.grade.split(',').map(g => g.trim()).filter(Boolean) : [];
+      document.querySelectorAll('#p-grade-bar .gb').forEach(btn => btn.classList.remove('active'));
+      _selGrades.forEach(g => {
+        const b = document.getElementById('grade-' + g);
+        if (b) b.classList.add('active');
+      });
+      document.getElementById('p-zoom').value = s.zoom || '';
+      document.getElementById('p-region').value = s.region || '';
+      updateBranches(s.branch || '');
+      pickVenue(s.venue || '');
+      document.getElementById('p-teacher').value = s.teacher || '';
+      document.getElementById('p-cohost').value = s.cohost || '';
+      document.getElementById('p-invited').value = s.invited || '';
+
+      document.getElementById('form-title').innerHTML = `Edit Session <span class="sec-sub">Updating details for ${s.branch}</span>`;
+      document.getElementById('btn-save-plan').textContent = 'Update Session Plan';
+      document.getElementById('btn-cancel-edit').style.display = 'inline-block';
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function saveSession() {
+      const date = document.getElementById('p-date').value;
+      const branch = document.getElementById('p-branch').value.trim();
+      const teacher = document.getElementById('p-teacher').value.trim();
+      if (!date || !branch || !teacher) { toast('Date, Branch and Teacher are required'); return; }
+
+      if (editingId) {
+        const s = sessions.find(x => x.id === editingId);
+        if (s) {
+          s.date = date;
+          s.time = document.getElementById('p-time').value;
+          s.grade = _selGrades.join(', ');
+          s.zoom = document.getElementById('p-zoom').value.trim();
+          s.branch = branch;
+          s.region = document.getElementById('p-region').value.trim();
+          s.venue = _selVenue;
+          s.teacher = teacher;
+          s.cohost = document.getElementById('p-cohost').value.trim();
+          s.invited = parseInt(document.getElementById('p-invited').value) || 0;
+        }
+        cancelEdit();
+        refreshData().then(() => toast('Session updated!'));
+      } else {
+        sessions.unshift({
+          id: uid(), date,
+          time: document.getElementById('p-time').value,
+          grade: _selGrades.join(', '),
+          zoom: document.getElementById('p-zoom').value.trim(),
+          branch, region: document.getElementById('p-region').value.trim(),
+          venue: _selVenue,
+          teacher, cohost: document.getElementById('p-cohost').value.trim(),
+          invited: parseInt(document.getElementById('p-invited').value) || 0,
+          status: 'Planned',
+          attended: '', engagement: '', followUp: '', followUpDate: '', followUpNotes: '', sessionStatus: '', remarks: ''
+        });
+        clearForm(); refreshData().then(() => toast('Session planned!'));
+      }
+    }
+
+    function delSession(id) {
+      if (!confirm('Delete this session?')) return;
+      sessions = sessions.filter(s => s.id !== id);
+      refreshData().then(() => toast('Deleted'));
+    }
+
+    function toggleExp(sid, mode = 'pmo') {
+      const key = expandKey(sid, mode);
+      openExpand[key] = !openExpand[key];
+      const expEl = document.getElementById(`exp-${mode}-${sid}`);
+      const arrEl = document.getElementById(`arr-${mode}-${sid}`);
+      if (!expEl) return;
+      if (openExpand[key]) {
+        const s = sessions.find(x => x.id === sid);
+        expEl.innerHTML = buildExpandContent(s);
+        expEl.style.display = 'block';
+        if (arrEl) arrEl.classList.add('open');
+      } else {
+        expEl.style.display = 'none';
+        expEl.innerHTML = '';
+        if (arrEl) arrEl.classList.remove('open');
+      }
+    }
+
+    function buildExpandContent(s) {
+      const isSpeaker = document.getElementById('view-speaker').style.display !== 'none';
+      const canUpdate = isSpeaker && s.status === 'Planned';
+
+      const infoBlock = `
+    <div class="ig">
+      <div class="ii"><label>Date & Time</label><p>${fmtDate(s.date)} ${s.time || ''}</p></div>
+      <div class="ii"><label>Grade</label><p>${s.grade || '—'}</p></div>
+      <div class="ii"><label>Zoom Link</label><p>${s.zoom ? `<a href="${s.zoom}" target="_blank" style="color:#185FA5;text-decoration:none;">Link</a>` : '—'}</p></div>
+      <div class="ii"><label>Branch</label><p>${s.branch || '—'}</p></div>
+      <div class="ii"><label>Region</label><p>${s.region || '—'}</p></div>
+      <div class="ii"><label>Venue / Medium</label><p>${s.venue || '—'}</p></div>
+      <div class="ii"><label>Teacher</label><p>${s.teacher || '—'}</p></div>
+      <div class="ii"><label>Co-Host</label><p>${s.cohost || '—'}</p></div>
+      <div class="ii"><label>Parents Invited</label><p>${s.invited || 0}</p></div>
+      <div class="ii"><label>Attended</label><p>${s.attended !== '' ? s.attended : '—'}</p></div>
+      <div class="ii"><label>Engagement</label><p>${s.engagement || '—'}</p></div>
+    </div>
+    ${s.status === 'Completed' ? `
+      <div class="divhr"></div>
+      <div class="stl">Post-Activity Details</div>
+      <div class="ig">
+        <div class="ii"><label>Session Status</label><p>${s.sessionStatus || '—'}</p></div>
+        <div class="ii"><label>Follow-Up Required</label><p>${s.followUp || '—'}</p></div>
+        <div class="ii"><label>Follow-Up Date</label><p>${fmtDate(s.followUpDate)}</p></div>
+        <div class="ii" style="grid-column:1/-1"><label>Follow-Up Notes</label><p>${s.followUpNotes || '—'}</p></div>
+        <div class="ii" style="grid-column:1/-1"><label>Remarks</label><p>${s.remarks || '—'}</p></div>
+      </div>` : ''}
+  `;
+
+      if (!canUpdate) return infoBlock;
+
+      return infoBlock + `
+    <div class="divhr"></div>
+    <div class="stl">Post-Activity Update</div>
+    
+    <div class="fg" style="margin-bottom:12px">
+      <label>Update Action *</label>
+      <div class="grade-bar" id="p-action-bar-${s.id}">
+        <button class="gb active" id="act-Completed-${s.id}" onclick="pickAction('${s.id}', 'Completed')">Completed</button>
+        <button class="gb" id="act-Rescheduled-${s.id}" onclick="pickAction('${s.id}', 'Rescheduled')">Rescheduled</button>
+        <button class="gb" id="act-Cancelled-${s.id}" onclick="pickAction('${s.id}', 'Cancelled')">Cancelled</button>
+      </div>
+    </div>
+
+    <div id="upd-form-fields-${s.id}">
+      <div class="fg2" style="margin-bottom:12px">
+        <div class="fg">
+          <label>No. of Parents Attended *</label>
+          <input type="number" id="f-att-${s.id}" placeholder="0" min="0" value="${s.attended || ''}">
+        </div>
+        <div class="fg">
+          <label>Engagement Level *</label>
+          <div class="engbar">
+            <button class="eb ${s.engagement === 'H' ? 'eH' : ''}" id="eng-H-${s.id}" onclick="pickEng('${s.id}', 'H')">H – High</button>
+            <button class="eb ${s.engagement === 'M' ? 'eM' : ''}" id="eng-M-${s.id}" onclick="pickEng('${s.id}', 'M')">M – Medium</button>
+            <button class="eb ${s.engagement === 'L' ? 'eL' : ''}" id="eng-L-${s.id}" onclick="pickEng('${s.id}', 'L')">L – Low</button>
+          </div>
+        </div>
+        <div class="fg">
+          <label>Follow-Up Required</label>
+          <select id="f-fu-${s.id}">
+            <option value="">Select</option>
+            <option value="Y" ${s.followUp === 'Y' ? 'selected' : ''}>Y – Yes</option>
+            <option value="N" ${s.followUp === 'N' ? 'selected' : ''}>N – No</option>
+          </select>
+        </div>
+        <div class="fg">
+          <label>Follow-Up Date</label>
+          <input type="date" id="f-fud-${s.id}" value="${s.followUpDate || ''}">
+        </div>
+        <div class="fg">
+          <label>Overall Session Status *</label>
+          <select id="f-sts-${s.id}">
+            <option value="">Select status</option>
+            ${['Successful', 'Excellent', 'Moderate', 'Low Turnout']
+          .map(o => `<option value="${o}" ${s.sessionStatus === o ? 'selected' : ''}>${o}</option>`).join('')}
+          </select>
+        </div>
+        <div class="fg full">
+          <label>Follow-Up Notes</label>
+          <textarea id="f-fun-${s.id}" placeholder="Notes for follow-up team...">${s.followUpNotes || ''}</textarea>
+        </div>
+        <div class="fg full">
+          <label>Remarks</label>
+          <textarea id="f-rem-${s.id}" placeholder="Overall session remarks...">${s.remarks || ''}</textarea>
+        </div>
+      </div>
+    </div>
+    <div style="display:flex;justify-content:flex-end">
+      <button class="btn btn-p" id="btn-submit-${s.id}" onclick="submitUpdate('${s.id}')">Mark as Completed</button>
+    </div>
+  `;
+    }
+
+    function pickEng(sid, val) {
+      _selEng[sid] = val;
+      ['H', 'M', 'L'].forEach(v => {
+        const b = document.getElementById(`eng-${v}-${sid}`);
+        if (b) b.className = 'eb' + (v === val ? ' e' + v : '');
+      });
+    }
+
+    function pickAction(sid, action) {
+      _selAction[sid] = action;
+      document.querySelectorAll(`#p-action-bar-${sid} .gb`).forEach(btn => btn.classList.remove('active'));
+      const b = document.getElementById(`act-${action}-${sid}`);
+      if (b) b.classList.add('active');
+
+      const formDiv = document.getElementById(`upd-form-fields-${sid}`);
+      const submitBtn = document.getElementById(`btn-submit-${sid}`);
+
+      if (action === 'Completed') {
+        formDiv.style.display = 'block';
+        submitBtn.textContent = 'Mark as Completed';
+      } else {
+        formDiv.style.display = 'none';
+        submitBtn.textContent = `Mark as ${action}`;
+      }
+    }
+
+    function submitUpdate(sid) {
+      const s = sessions.find(x => x.id === sid);
+      if (!s) { toast('Session not found'); return; }
+
+      const action = _selAction[sid] || 'Completed';
+
+      if (action === 'Completed') {
+        const att = document.getElementById(`f-att-${sid}`)?.value?.trim();
+        const eng = _selEng[sid] || s.engagement;
+        const sts = document.getElementById(`f-sts-${sid}`)?.value;
+        if (!att) { toast('Please enter number of parents attended'); return; }
+        if (!eng) { toast('Please select engagement level'); return; }
+        if (!sts) { toast('Please select overall session status'); return; }
+        s.attended = parseInt(att) || 0;
+        s.engagement = eng;
+        s.followUp = document.getElementById(`f-fu-${sid}`)?.value || '';
+        s.followUpDate = document.getElementById(`f-fud-${sid}`)?.value || '';
+        s.followUpNotes = document.getElementById(`f-fun-${sid}`)?.value || '';
+        s.sessionStatus = sts;
+        s.remarks = document.getElementById(`f-rem-${sid}`)?.value || '';
+      } else {
+        s.attended = 0;
+        s.engagement = '';
+        s.followUp = '';
+        s.followUpDate = '';
+        s.followUpNotes = '';
+        s.sessionStatus = action; // 'Rescheduled' or 'Cancelled'
+        s.remarks = '';
+      }
+
+      s.status = 'Completed';
+      s.updateAction = action;
+      delete _selEng[sid];
+      delete _selAction[sid];
+      openExpand[expandKey(sid, 'spk')] = false;
+      openExpand[expandKey(sid, 'pmo')] = false;
+      refreshData().then(() => toast(`Session marked as ${action}!`));
+    }
+
+    function renderMetrics() {
+      const total = sessions.length;
+      const done = sessions.filter(s => s.status === 'Completed').length;
+      const inv = sessions.reduce((a, s) => a + (s.invited || 0), 0);
+      const att = sessions.reduce((a, s) => a + (parseInt(s.attended) || 0), 0);
+      const rate = inv ? Math.round(att / inv * 100) : 0;
+      document.getElementById('metrics').innerHTML = `
+    <div class="metric"><div class="mv">${total}</div><div class="ml">Total Sessions</div></div>
+    <div class="metric"><div class="mv">${done}</div><div class="ml">Completed</div></div>
+    <div class="metric"><div class="mv">${inv}</div><div class="ml">Parents Invited</div></div>
+    <div class="metric"><div class="mv">${att} <span style="font-size:13px;color:#888">(${rate}%)</span></div><div class="ml">Attended</div></div>
+  `;
+    }
+
+    function sessionRowHTML(s, speakerMode) {
+      const pillCls = s.status === 'Completed' ? 'pc' : 'pl';
+      const mode = speakerMode ? 'spk' : 'pmo';
+      const key = expandKey(s.id, mode);
+      const isOpen = openExpand[key];
+      return `
+    <div class="srow">
+      <div class="shead" onclick="toggleExp('${s.id}','${mode}')">
+        <div class="smeta">
+          <div class="strow">
+            <span class="sname">${s.branch || '—'}</span>
+            <span class="pill ${pillCls}">${s.status}</span>
+            ${s.region ? `<span style="font-size:11px;color:#888">${s.region}</span>` : ''}
+          </div>
+          <div class="sdet">
+            <span>📅 ${fmtDate(s.date)}${s.time ? ' · ' + s.time : ''}</span>
+            <span>👤 ${s.teacher}${s.cohost ? ' + ' + s.cohost : ''}</span>
+            ${s.venue ? `<span>📍 ${s.venue}</span>` : ''}
+            <span>Invited: <b>${s.invited || 0}</b></span>
+            ${s.status === 'Completed' ? `<span>Attended: <b>${s.attended}</b></span>` : ''}
+          </div>
+        </div>
+        <div class="sact">
+          <button class="btn btn-o btn-sm" onclick="event.stopPropagation();toggleExp('${s.id}','${mode}')">Details <span class="arrow ${isOpen ? 'open' : ''}" id="arr-${mode}-${s.id}">▾</span></button>
+          ${!speakerMode && s.status !== 'Completed'
+          ? `<button class="btn btn-o btn-sm" onclick="event.stopPropagation();editSession('${s.id}')">Edit</button><button class="btn btn-d btn-sm" onclick="event.stopPropagation();delSession('${s.id}')">Delete</button>`
+          : ''}
+        </div>
+      </div>
+      <div class="exp" id="exp-${mode}-${s.id}" style="display:${isOpen ? 'block' : 'none'}">
+        ${isOpen ? buildExpandContent(s) : ''}
+      </div>
+    </div>`;
+    }
+
+    function renderPMO() {
+      renderMetrics();
+      const sf = document.getElementById('f-status')?.value || '';
+      const q = (document.getElementById('f-search')?.value || '').toLowerCase();
+      let list = sessions;
+      if (sf) list = list.filter(s => s.status === sf);
+      if (q) list = list.filter(s =>
+        (s.branch || '').toLowerCase().includes(q) ||
+        (s.teacher || '').toLowerCase().includes(q) ||
+        (s.region || '').toLowerCase().includes(q)
+      );
+      document.getElementById('count-lbl').textContent = `${list.length} session${list.length !== 1 ? 's' : ''}`;
+      document.getElementById('pmo-list').innerHTML = list.length
+        ? list.map(s => sessionRowHTML(s, false)).join('')
+        : '<div class="empty">No sessions yet. Plan one above.</div>';
+    }
+
+    function renderSpeaker() {
+      const pending = sessions.filter(s => s.status === 'Planned');
+      const completed = sessions.filter(s => s.status === 'Completed');
+      let html = '';
+      if (pending.length) {
+        html += `<div class="glbl">Pending Update (${pending.length})</div>
+             <div class="slist" style="margin-bottom:1.5rem">${pending.map(s => sessionRowHTML(s, true)).join('')}</div>`;
+      }
+      if (completed.length) {
+        html += `<div class="glbl">Completed (${completed.length})</div>
+             <div class="slist">${completed.map(s => sessionRowHTML(s, true)).join('')}</div>`;
+      }
+      document.getElementById('spk-list').innerHTML = html || '<div class="empty">No sessions planned yet. Ask PMO to add sessions.</div>';
+    }
+
+    function renderAll() { renderMetrics(); renderPMO(); renderSpeaker(); }
+
+    // ── Excel Export ─────────────────────────────────────────────────────────────
+    async function exportExcel() {
+      await refreshData();
+      toast(`Generating Excel file... Please wait.`);
+
+      try {
+        const buffer = await generateExcelBuffer();
+        saveAs(new Blob([buffer]), "Parent_Orientation_Tracker.xlsx");
+        toast("Excel file downloaded successfully.");
+      } catch (error) {
+        console.error('Failed to export Excel:', error);
+        toast("Failed to generate Excel file.");
+      }
+    }
+
+    initLogin();
+  </script>
+</body>
+
+</html>
